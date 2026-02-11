@@ -10,12 +10,12 @@
 
 <header>
   <h1>🐱 GATO</h1>
-  <p>Gestor de Arquivos Tugas Online - Feed 100% Nacional</p>
+  <p>Feed Nacional, Blogs, Mensagens e God Mode</p>
 </header>
 
 <!-- LOGIN / CRIAÇÃO DE CONTA -->
 <section class="login-section" id="loginSection">
-  <h2>Login / Criar conta (GATTAG)</h2>
+  <h2>Login / Criar conta</h2>
   <input type="text" id="username" placeholder="@GATTAG">
   <input type="password" id="password" placeholder="Senha">
   <button id="loginBtn">Entrar / Criar</button>
@@ -27,37 +27,40 @@
   <h2 id="welcome"></h2>
   <button id="logoutBtn">Sair</button>
 
-  <!-- CRIAR BLOG -->
-  <div class="blog-section">
-    <h3>Criar Blog</h3>
-    <input type="text" id="blogTitle" placeholder="Nome do teu blog">
-    <button id="createBlogBtn">Criar Blog</button>
-  </div>
+  <div class="dashboard">
 
-  <!-- CRIAR POST -->
-  <div class="post-section">
-    <h3>Criar Post</h3>
-    <textarea id="postText" placeholder="Escreve o teu post..."></textarea>
-    <button id="addPostBtn">Publicar</button>
-  </div>
-
-  <!-- FEED NACIONAL -->
-  <div class="feed-section">
-    <h3>Feed Nacional</h3>
-    <div id="feed"></div>
-  </div>
-
-  <!-- MENSAGENS PRIVADAS -->
-  <div class="message-section">
-    <h3>Mensagens Privadas</h3>
-    <input type="text" id="msgTo" placeholder="Para @GATTAG">
-    <textarea id="msgText" placeholder="Escreve a tua mensagem..."></textarea>
-    <button id="sendMsgBtn">Enviar Mensagem</button>
-
-    <div id="inbox">
-      <h4>Caixa de Entrada</h4>
-      <div id="messages"></div>
+    <!-- CRIAR POST -->
+    <div class="dashboard-card post-card">
+      <h3>Criar Post</h3>
+      <textarea id="postText" placeholder="Escreve o teu post..."></textarea>
+      <button id="addPostBtn">Publicar</button>
     </div>
+
+    <!-- FEED NACIONAL -->
+    <div class="dashboard-card feed-card">
+      <h3>Feed Nacional</h3>
+      <div id="feed"></div>
+    </div>
+
+    <!-- MENSAGENS PRIVADAS -->
+    <div class="dashboard-card message-card">
+      <h3>Mensagens Privadas</h3>
+      <input type="text" id="msgTo" placeholder="Para @GATTAG">
+      <textarea id="msgText" placeholder="Escreve a tua mensagem..."></textarea>
+      <button id="sendMsgBtn">Enviar Mensagem</button>
+
+      <div id="inbox">
+        <h4>Caixa de Entrada</h4>
+        <div id="messages"></div>
+      </div>
+    </div>
+
+    <!-- ABA EXCLUSIVA GOD MODE -->
+    <div id="godModeSection" class="dashboard-card" style="display:none;">
+      <h3>God Mode 🛡️</h3>
+      <div id="godUsers"></div>
+    </div>
+
   </div>
 
 </section>
