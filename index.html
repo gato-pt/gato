@@ -1,33 +1,62 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>GATO 🐱</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
 <header>
   <h1>🐱 GATO</h1>
-  <p>Gestor de Arquivos Tugas Online</p>
+  <p>Gestor de Arquivos Tugas Online - Feed 100% Nacional</p>
 </header>
 
-<section class="login">
-  <input id="username" placeholder="@teuGattag" />
-  <button onclick="login()">Entrar</button>
+<!-- LOGIN / CRIAÇÃO DE CONTA -->
+<section class="login-section" id="loginSection">
+  <h2>Login / Criar conta (GATTAG)</h2>
+  <input type="text" id="username" placeholder="@GATTAG">
+  <button id="loginBtn">Entrar / Criar</button>
 </section>
 
+<!-- APP PRINCIPAL -->
 <section id="app" class="hidden">
 
   <h2 id="welcome"></h2>
 
-  <div class="new-post">
-    <textarea id="postText" placeholder="Escreve o teu post..."></textarea>
-    <button onclick="addPost()">Publicar</button>
+  <!-- CRIAR BLOG -->
+  <div class="blog-section">
+    <h3>Criar Blog</h3>
+    <input type="text" id="blogTitle" placeholder="Nome do teu blog">
+    <button id="createBlogBtn">Criar Blog</button>
   </div>
 
-  <div id="feed"></div>
+  <!-- CRIAR POST -->
+  <div class="post-section">
+    <h3>Criar Post</h3>
+    <textarea id="postText" placeholder="Escreve o teu post..."></textarea>
+    <button id="addPostBtn">Publicar</button>
+  </div>
+
+  <!-- FEED NACIONAL -->
+  <div class="feed-section">
+    <h3>Feed Nacional</h3>
+    <div id="feed"></div>
+  </div>
+
+  <!-- MENSAGENS PRIVADAS -->
+  <div class="message-section">
+    <h3>Mensagens Privadas</h3>
+    <input type="text" id="msgTo" placeholder="Para @GATTAG">
+    <textarea id="msgText" placeholder="Escreve a tua mensagem..."></textarea>
+    <button id="sendMsgBtn">Enviar Mensagem</button>
+
+    <div id="inbox">
+      <h4>Caixa de Entrada</h4>
+      <div id="messages"></div>
+    </div>
+  </div>
 
 </section>
 
