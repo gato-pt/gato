@@ -1,30 +1,55 @@
 // ===== VARIÁVEIS GLOBAIS =====
 let currentUser = null;
 
+// ===== INICIALIZAÇÃO - LOGIN AUTOMÁTICO =====
+window.addEventListener("load", () => {
+  const savedUser = JSON.parse(localStorage.getItem("currentUser"));
+  if (savedUser) {
+    currentUser = savedUser.username;
+    document.getElementById("loginSection").classList.add("hidden");
+    document.getElementById("app").classList.remove("hidden");
+    document.getElementById("welcome").innerText = "Bem-vindo @" + currentUser;
+    loadFeed();
+    loadMessages();
+  }
+});
+
 // ===== LOGIN / CRIAÇÃO DE CONTA =====
 document.getElementById("loginBtn").addEventListener("click", () => {
   const username = document.getElementById("username").value.trim();
-  if (!username) return alert("Escreve um @GATTAG!");
+  const password = document.getElementById("password").value.trim();
+  if (!username || !password) return alert("Preenche todos os campos!");
 
   let users = JSON.parse(localStorage.getItem("users") || "[]");
+  let userObj = users.find(u => u.username === username);
 
-  if (!users.includes(username)) {
-    users.push(username);
+  if (!userObj) {
+    // Criar conta
+    users.push({ username, password });
     localStorage.setItem("users", JSON.stringify(users));
     alert("Conta criada! Bem-vindo @" + username);
   } else {
+    // Login
+    if (userObj.password !== password) return alert("Senha incorreta!");
     alert("Login efetuado! Bem-vindo @" + username);
   }
 
   currentUser = username;
-  localStorage.setItem("currentUser", username);
-
+  localStorage.setItem("currentUser", JSON.stringify({ username }));
   document.getElementById("loginSection").classList.add("hidden");
   document.getElementById("app").classList.remove("hidden");
   document.getElementById("welcome").innerText = "Bem-vindo @" + username;
 
   loadFeed();
   loadMessages();
+});
+
+// ===== LOGOUT =====
+document.getElementById("logoutBtn").addEventListener("click", () => {
+  localStorage.removeItem("currentUser");
+  currentUser = null;
+  document.getElementById("loginSection").classList.remove("hidden");
+  document.getElementById("app").classList.add("hidden");
 });
 
 // ===== CRIAR BLOG =====
@@ -77,7 +102,7 @@ document.getElementById("sendMsgBtn").addEventListener("click", () => {
   if (!toUser || !text) return alert("Preenche todos os campos!");
 
   let users = JSON.parse(localStorage.getItem("users") || "[]");
-  if (!users.includes(toUser)) return alert("Esse GATTAG não existe!");
+  if (!users.find(u => u.username === toUser)) return alert("Esse GATTAG não existe!");
 
   let messages = JSON.parse(localStorage.getItem("messages") || "{}");
   if (!messages[toUser]) messages[toUser] = [];
