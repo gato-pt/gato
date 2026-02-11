@@ -48,13 +48,28 @@ button:hover {
   background: #45a049;
 }
 
-.blog-section, .post-section, .feed-section, .message-section {
-  background: white;
-  padding: 15px;
-  margin: 15px;
-  border-radius: 8px;
+/* DASHBOARD */
+.dashboard {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  margin: 20px;
+  gap: 15px;
 }
 
+.dashboard-card {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  flex: 1 1 300px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.dashboard-card h3 {
+  margin-top: 0;
+}
+
+/* POSTS E MENSAGENS */
 .post {
   background: #f9f9f9;
   padding: 10px;
@@ -69,14 +84,28 @@ button:hover {
   border-radius: 5px;
 }
 
-@media (max-width: 600px) {
-  body {
-    font-size: 14px;
-  }
-  header h1 {
-    font-size: 24px;
-  }
-  textarea, input {
-    font-size: 14px;
+/* GOD MODE */
+#godModeSection {
+  background: #ffe4e1;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+.god-user {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.god-user button {
+  margin-left: 5px;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+/* RESPONSIVO */
+@media (max-width: 900px) {
+  .dashboard {
+    flex-direction: column;
+    gap: 20px;
   }
 }
