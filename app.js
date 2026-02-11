@@ -1,7 +1,10 @@
-// ===== VARIÁVEIS GLOBAIS =====
 let currentUser = null;
 
-// ===== INICIALIZAÇÃO - LOGIN AUTOMÁTICO =====
+// Contas God Mode
+const godAccounts = ["gato", "zeh"];
+const godModePasswords = { "gato": "GatoByZeh@", "zeh": "ZehIsDiva&" };
+
+// ===== INICIALIZAÇÃO =====
 window.addEventListener("load", () => {
   const savedUser = JSON.parse(localStorage.getItem("currentUser"));
   if (savedUser) {
@@ -9,10 +12,23 @@ window.addEventListener("load", () => {
     document.getElementById("loginSection").classList.add("hidden");
     document.getElementById("app").classList.remove("hidden");
     document.getElementById("welcome").innerText = "Bem-vindo @" + currentUser;
+    initializeUsers();
     loadFeed();
     loadMessages();
+    checkGodMode();
   }
 });
+
+// ===== INICIALIZAÇÃO DE USUÁRIOS GOD MODE =====
+function initializeUsers() {
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  godAccounts.forEach(user => {
+    if (!users.find(u => u.username === user)) {
+      users.push({ username: user, password: godModePasswords[user], verified: true });
+    }
+  });
+  localStorage.setItem("users", JSON.stringify(users));
+}
 
 // ===== LOGIN / CRIAÇÃO DE CONTA =====
 document.getElementById("loginBtn").addEventListener("click", () => {
@@ -23,25 +39,32 @@ document.getElementById("loginBtn").addEventListener("click", () => {
   let users = JSON.parse(localStorage.getItem("users") || "[]");
   let userObj = users.find(u => u.username === username);
 
-  if (!userObj) {
-    // Criar conta
-    users.push({ username, password });
-    localStorage.setItem("users", JSON.stringify(users));
-    alert("Conta criada! Bem-vindo @" + username);
+  if (godAccounts.includes(username)) {
+    if (password !== godModePasswords[username]) return alert("Senha incorreta!");
+    currentUser = username;
+    if (!userObj) {
+      users.push({ username, password: godModePasswords[username], verified: true });
+    }
   } else {
-    // Login
-    if (userObj.password !== password) return alert("Senha incorreta!");
-    alert("Login efetuado! Bem-vindo @" + username);
+    if (!userObj) {
+      users.push({ username, password, verified: false });
+      alert("Conta criada! Bem-vindo @" + username);
+    } else {
+      if (userObj.password !== password) return alert("Senha incorreta!");
+      alert("Login efetuado! Bem-vindo @" + username);
+    }
+    currentUser = username;
   }
 
-  currentUser = username;
+  localStorage.setItem("users", JSON.stringify(users));
   localStorage.setItem("currentUser", JSON.stringify({ username }));
   document.getElementById("loginSection").classList.add("hidden");
   document.getElementById("app").classList.remove("hidden");
-  document.getElementById("welcome").innerText = "Bem-vindo @" + username;
+  document.getElementById("welcome").innerText = "Bem-vindo @" + currentUser;
 
   loadFeed();
   loadMessages();
+  checkGodMode();
 });
 
 // ===== LOGOUT =====
@@ -52,25 +75,13 @@ document.getElementById("logoutBtn").addEventListener("click", () => {
   document.getElementById("app").classList.add("hidden");
 });
 
-// ===== CRIAR BLOG =====
-document.getElementById("createBlogBtn").addEventListener("click", () => {
-  const title = document.getElementById("blogTitle").value.trim();
-  if (!title) return alert("Escreve o nome do blog!");
-
-  let blogs = JSON.parse(localStorage.getItem("blogs") || "{}");
-  blogs[currentUser] = { title: title, posts: [] };
-  localStorage.setItem("blogs", JSON.stringify(blogs));
-  alert("Blog criado!");
-  document.getElementById("blogTitle").value = "";
-});
-
 // ===== CRIAR POST =====
 document.getElementById("addPostBtn").addEventListener("click", () => {
   const text = document.getElementById("postText").value.trim();
   if (!text) return alert("Escreve algo para postar!");
 
   let blogs = JSON.parse(localStorage.getItem("blogs") || "{}");
-  if (!blogs[currentUser]) return alert("Cria um blog primeiro!");
+  if (!blogs[currentUser]) blogs[currentUser] = { title: currentUser + "'s Blog", posts: [] };
 
   blogs[currentUser].posts.push({ text: text, date: new Date() });
   localStorage.setItem("blogs", JSON.stringify(blogs));
@@ -84,12 +95,28 @@ function loadFeed() {
   feed.innerHTML = "";
 
   let blogs = JSON.parse(localStorage.getItem("blogs") || "{}");
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
 
   for (let user in blogs) {
-    blogs[user].posts.slice().reverse().forEach(post => {
+    let userObj = users.find(u => u.username === user);
+    blogs[user].posts.slice().reverse().forEach((post, index) => {
       const div = document.createElement("div");
       div.className = "post";
-      div.innerHTML = `<strong>@${user}</strong> (${new Date(post.date).toLocaleString()}):<br>${post.text}`;
+      let verifiedMark = userObj && userObj.verified ? " ✔️" : "";
+      div.innerHTML = `<strong>@${user}${verifiedMark}</strong> (${new Date(post.date).toLocaleString()}):<br>${post.text}`;
+
+      if (godAccounts.includes(currentUser)) {
+        const delBtn = document.createElement("button");
+        delBtn.innerText = "Deletar";
+        delBtn.style.marginTop = "5px";
+        delBtn.onclick = () => {
+          blogs[user].posts.splice(blogs[user].posts.length - 1 - index, 1);
+          localStorage.setItem("blogs", JSON.stringify(blogs));
+          loadFeed();
+        };
+        div.appendChild(delBtn);
+      }
+
       feed.appendChild(div);
     });
   }
@@ -125,5 +152,56 @@ function loadMessages() {
     div.className = "message";
     div.innerHTML = `<strong>@${msg.from}</strong> (${new Date(msg.date).toLocaleString()}): ${msg.text}`;
     messagesDiv.appendChild(div);
+  });
+}
+
+// ===== GOD MODE =====
+function checkGodMode() {
+  const godSection = document.getElementById("godModeSection");
+  if (godAccounts.includes(currentUser)) {
+    godSection.style.display = "block";
+    loadGodUsers();
+  } else {
+    godSection.style.display = "none";
+  }
+}
+
+function loadGodUsers() {
+  const godDiv = document.getElementById("godUsers");
+  godDiv.innerHTML = "";
+
+  let users = JSON.parse(localStorage.getItem("users") || "[]");
+  let blogs = JSON.parse(localStorage.getItem("blogs") || "{}");
+
+  users.forEach(u => {
+    const div = document.createElement("div");
+    div.className = "god-user";
+    div.innerHTML = `<span>@${u.username} ${u.verified ? "✔️" : ""}</span>`;
+
+    if (!godAccounts.includes(u.username)) {
+      const verifyBtn = document.createElement("button");
+      verifyBtn.innerText = u.verified ? "Desverificar" : "Verificar";
+      verifyBtn.onclick = () => {
+        u.verified = !u.verified;
+        localStorage.setItem("users", JSON.stringify(users));
+        loadGodUsers();
+        loadFeed();
+      };
+      div.appendChild(verifyBtn);
+
+      if (blogs[u.username] && blogs[u.username].posts.length > 0) {
+        const delPostsBtn = document.createElement("button");
+        delPostsBtn.innerText = "Deletar Posts";
+        delPostsBtn.onclick = () => {
+          blogs[u.username].posts = [];
+          localStorage.setItem("blogs", JSON.stringify(blogs));
+          loadGodUsers();
+          loadFeed();
+        };
+        div.appendChild(delPostsBtn);
+      }
+    }
+
+    godDiv.appendChild(div);
   });
 }
