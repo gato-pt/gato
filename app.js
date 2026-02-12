@@ -1,10 +1,9 @@
-let currentUser = null;
-const godAccounts = ["gato","zeh"];
-const godPasswords = { "gato":"GatoByZeh@", "zeh":"ZehIsDiva&" };
+let currentUser=null;
+const godAccounts=["gato","zeh"];
 
 // ===== INICIALIZAÇÃO =====
 window.addEventListener("load",()=>{
-  const saved = JSON.parse(localStorage.getItem("currentUser"));
+  const saved=JSON.parse(localStorage.getItem("currentUser"));
   if(saved) login(saved.username,false);
   initTabs();
 });
@@ -18,13 +17,13 @@ document.getElementById("loginBtn").addEventListener("click",()=>{
 });
 
 function login(u,manual=true,p=""){
-  let users = JSON.parse(localStorage.getItem("users")||"[]");
-  let userObj = users.find(x=>x.username===u);
+  let users=JSON.parse(localStorage.getItem("users")||"[]");
+  let userObj=users.find(x=>x.username===u);
 
   if(godAccounts.includes(u)){
     if(manual && p!==godPasswords[u]) return alert("Senha incorreta!");
     currentUser=u;
-    if(!userObj) users.push({username:u,password:godPasswords[u],verified:true,god:true});
+    if(!userObj) users.push({username:u,password:godPasswords[u],verified:true,god:true,following:[],blogs:[]});
   } else {
     if(!userObj){
       if(!manual) return;
@@ -43,7 +42,7 @@ function login(u,manual=true,p=""){
   document.getElementById("app").classList.remove("hidden");
   document.getElementById("welcome").innerText="Bem-vindo @"+currentUser;
 
-  loadFeed(); loadMyBlogs(); checkGodMode();
+  loadFeed(); loadMyBlogs(); loadMessages(); checkGodMode();
 }
 
 // ===== LOGOUT =====
@@ -71,21 +70,17 @@ document.getElementById("createBlogBtn").addEventListener("click",()=>{
   const name=document.getElementById("blogName").value.trim();
   const desc=document.getElementById("blogDesc").value.trim();
   if(!name||!desc)return alert("Preenche todos os campos!");
-  let blogs = JSON.parse(localStorage.getItem("blogs")||"{}");
+  let blogs=JSON.parse(localStorage.getItem("blogs")||"{}");
   if(blogs[name]) return alert("Nome de blog já existe!");
-  blogs[name]={owner:currentUser,desc:desc,posts:[],followers:[],verified:false,god:false};
-  localStorage.setItem("blogs",JSON.stringify(blogs));
-
-  // adicionar ao user
   let users=JSON.parse(localStorage.getItem("users")||"[]");
-  let uObj=users.find(x=>x.username===currentUser);
-  uObj.blogs.push(name);
+  let ownerObj=users.find(u=>u.username===currentUser);
+  blogs[name]={owner:currentUser,desc:desc,posts:[],followers:[],verified:ownerObj.verified,god:ownerObj.god};
+  ownerObj.blogs.push(name);
+  localStorage.setItem("blogs",JSON.stringify(blogs));
   localStorage.setItem("users",JSON.stringify(users));
-
   document.getElementById("blogName").value="";
   document.getElementById("blogDesc").value="";
-  loadFeed();
-  loadMyBlogs();
+  loadFeed(); loadMyBlogs();
 });
 
 // ===== FEED =====
@@ -102,14 +97,14 @@ function loadFeed(search=""){
   for(let blogName in blogs){
     if(search && !blogName.toLowerCase().includes(search) && !blogs[blogName].owner.toLowerCase().includes(search)) continue;
     const b=blogs[blogName];
-    let owner=users.find(u=>u.username===b.owner);
-    let mark = owner.verified ? "✔️" : "";
-    let godMark = owner.god ? "⚒️" : "";
+    const owner=users.find(u=>u.username===b.owner);
+    const mark=owner.verified?"✔️":"";
+    const godMark=owner.god?"⚒️":"";
     const div=document.createElement("div"); div.className="blog-card";
     div.innerHTML=`<div class="blog-title">${blogName} (${b.owner}) ${mark} ${godMark}</div>
       <div>${b.desc}</div>
       <button onclick="viewBlog('${blogName}')">Ver Blog</button>
-      <button onclick="followBlog('${blogName}')">${owner.following?.includes(blogName)?"Deixar de seguir":"Seguir"}</button>`;
+      <button onclick="followBlog('${blogName}')">${owner.following.includes(blogName)?"Deixar de seguir":"Seguir"}</button>`;
     feed.appendChild(div);
   }
 }
@@ -122,12 +117,11 @@ function loadMyBlogs(){
   let blogs=JSON.parse(localStorage.getItem("blogs")||"{}");
   uObj.blogs.forEach(blogName=>{
     let b=blogs[blogName];
-    let mark = uObj.verified ? "✔️" : "";
-    let godMark = uObj.god ? "⚒️" : "";
+    let mark=uObj.verified?"✔️":"";
+    let godMark=uObj.god?"⚒️":"";
     const div=document.createElement("div"); div.className="blog-card";
     div.innerHTML=`<div class="blog-title">${blogName} (${currentUser}) ${mark} ${godMark}</div>
       <div>${b.desc}</div>
-      <button onclick="viewBlog('${blogName}')">Ver Blog</button>
       <textarea id="postText_${blogName}" placeholder="Novo post..."></textarea>
       <button onclick="addPost('${blogName}')">Postar</button>`;
     myDiv.appendChild(div);
@@ -149,7 +143,6 @@ function addPost(blogName){
 function followBlog(blogName){
   let users=JSON.parse(localStorage.getItem("users")||"[]");
   let u=users.find(x=>x.username===currentUser);
-  let blogs=JSON.parse(localStorage.getItem("blogs")||"{}");
   if(!u.following) u.following=[];
   if(u.following.includes(blogName)){
     u.following=u.following.filter(x=>x!==blogName);
@@ -158,9 +151,30 @@ function followBlog(blogName){
   loadFeed();
 }
 
-// ===== VER BLOG INDIVIDUAL =====
-function viewBlog(blogName){
-  alert("Página de blog: "+blogName+" (em produção, depois podemos criar rota /bloggattag real)");
+// ===== MENSAGENS =====
+document.getElementById("sendMsgBtn").addEventListener("click",()=>{
+  const to=document.getElementById("msgTo").value.trim();
+  const text=document.getElementById("msgText").value.trim();
+  if(!to||!text)return alert("Preenche todos os campos!");
+  let users=JSON.parse(localStorage.getItem("users")||"[]");
+  if(!users.find(u=>u.username===to)) return alert("Usuário não existe!");
+  let msgs=JSON.parse(localStorage.getItem("messages")||"{}");
+  if(!msgs[to]) msgs[to]=[];
+  msgs[to].push({from:currentUser,text,date:new Date()});
+  localStorage.setItem("messages",JSON.stringify(msgs));
+  document.getElementById("msgText").value="";
+  loadMessages();
+});
+
+function loadMessages(){
+  const div=document.getElementById("messages"); div.innerHTML="";
+  let msgs=JSON.parse(localStorage.getItem("messages")||"{}");
+  if(!msgs[currentUser]) return;
+  msgs[currentUser].slice().reverse().forEach(m=>{
+    const d=document.createElement("div"); d.className="post";
+    d.innerHTML=`<strong>@${m.from}</strong> (${new Date(m.date).toLocaleString()}): ${m.text}`;
+    div.appendChild(d);
+  });
 }
 
 // ===== GOD MODE =====
@@ -175,7 +189,6 @@ function loadGodUsers(search=""){
   const godDiv=document.getElementById("godUsers"); godDiv.innerHTML="";
   let users=JSON.parse(localStorage.getItem("users")||"[]");
   let blogs=JSON.parse(localStorage.getItem("blogs")||"{}");
-
   let filtered=search?users.filter(u=>u.username.includes(search)):users;
 
   filtered.forEach(u=>{
@@ -184,18 +197,22 @@ function loadGodUsers(search=""){
     if(!godAccounts.includes(u.username)){
       const verifyBtn=document.createElement("button");
       verifyBtn.innerText=u.verified?"Desverificar":"Verificar";
-      verifyBtn.onclick=()=>{ u.verified=!u.verified; localStorage.setItem("users",JSON.stringify(users)); loadGodUsers(); loadFeed();}
+      verifyBtn.onclick=()=>{
+        u.verified=!u.verified;
+        localStorage.setItem("users",JSON.stringify(users));
+        loadGodUsers(); loadFeed();
+      };
       div.appendChild(verifyBtn);
 
-      // deletar posts
       u.blogs.forEach(blogName=>{
+        if(!blogs[blogName]) return;
         const delBtn=document.createElement("button");
         delBtn.innerText="Deletar Posts";
         delBtn.onclick=()=>{
           blogs[blogName].posts=[];
           localStorage.setItem("blogs",JSON.stringify(blogs));
           loadGodUsers(); loadFeed();
-        }
+        };
         div.appendChild(delBtn);
       });
     }
@@ -203,8 +220,12 @@ function loadGodUsers(search=""){
   });
 }
 
-// PESQUISA GOD MODE
 document.getElementById("searchGodBtn").addEventListener("click",()=>{
   const s=document.getElementById("searchGod").value.trim();
   loadGodUsers(s);
 });
+
+// ===== PÁGINA INDIVIDUAL DE BLOG (placeholder) =====
+function viewBlog(blogName){
+  alert("Página de blog: "+blogName+"\n(em produção: futura rota /bloggattag)");
+}
