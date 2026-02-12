@@ -31,6 +31,7 @@
     <button class="tab-btn active" data-tab="feedTab">Feed</button>
     <button class="tab-btn" data-tab="createBlogTab">Criar Blog</button>
     <button class="tab-btn" data-tab="myBlogsTab">Meus Blogs</button>
+    <button class="tab-btn" data-tab="messagesTab">Mensagens</button>
     <button class="tab-btn god-btn" data-tab="godTab">God Mode</button>
   </div>
 
@@ -55,6 +56,15 @@
       <div id="myBlogs"></div>
     </div>
 
+    <!-- MENSAGENS -->
+    <div id="messagesTab" class="tab">
+      <input type="text" id="msgTo" placeholder="Para @GATTAG">
+      <textarea id="msgText" placeholder="Escreve a tua mensagem..."></textarea>
+      <button id="sendMsgBtn">Enviar</button>
+      <h4>Caixa de Entrada</h4>
+      <div id="messages"></div>
+    </div>
+
     <!-- GOD MODE -->
     <div id="godTab" class="tab">
       <input type="text" id="searchGod" placeholder="Procurar @GATTAG ou blog 🔍">
@@ -63,7 +73,6 @@
     </div>
 
   </div>
-
 </section>
 
 <script src="app.js"></script>
