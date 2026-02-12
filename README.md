@@ -19,7 +19,7 @@ Exemplos:
 O GATTAG é usado para:
 - Login
 - Identificação nos posts e comentários
-- Mensagens internas (email fake interno)
+- Mensagens internas
 
 ---
 
@@ -30,8 +30,6 @@ O GATTAG é usado para:
 - Feed comunitário
 - Interface leve e nostálgica
 - 100% gratuito
-- Sem backend (fase inicial)
-
 ---
 
 ## 🧠 Filosofia do projeto
