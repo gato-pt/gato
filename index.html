@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GATO 🐱</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GATO 🐱</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -13,9 +13,9 @@
   <p>Feed Nacional, Blogs e Mensagens</p>
 </header>
 
-<!-- LOGIN / CRIAÇÃO DE CONTA -->
+<!-- LOGIN -->
 <section class="login-section" id="loginSection">
-  <h2>Login / Criar conta</h2>
+  <h2>Login / Criar Conta</h2>
   <input type="text" id="username" placeholder="@GATTAG">
   <input type="password" id="password" placeholder="Senha">
   <button id="loginBtn">Entrar / Criar</button>
@@ -23,15 +23,14 @@
 
 <!-- APP PRINCIPAL -->
 <section id="app" class="hidden">
-
   <h2 id="welcome"></h2>
   <button id="logoutBtn">Sair</button>
 
   <!-- ABAS -->
   <div class="tabs">
     <button class="tab-btn active" data-tab="feedTab">Feed</button>
-    <button class="tab-btn" data-tab="publishTab">Publicar</button>
-    <button class="tab-btn" data-tab="messagesTab">Mensagens</button>
+    <button class="tab-btn" data-tab="createBlogTab">Criar Blog</button>
+    <button class="tab-btn" data-tab="myBlogsTab">Meus Blogs</button>
     <button class="tab-btn god-btn" data-tab="godTab">God Mode</button>
   </div>
 
@@ -39,27 +38,26 @@
 
     <!-- FEED -->
     <div id="feedTab" class="tab active">
+      <input type="text" id="feedSearch" placeholder="Procurar blogs 🔍">
+      <button id="feedSearchBtn">Procurar</button>
       <div id="feed"></div>
     </div>
 
-    <!-- PUBLICAR -->
-    <div id="publishTab" class="tab">
-      <textarea id="postText" placeholder="Escreve o teu post..."></textarea>
-      <button id="addPostBtn">Publicar</button>
+    <!-- CRIAR BLOG -->
+    <div id="createBlogTab" class="tab">
+      <input type="text" id="blogName" placeholder="Nome do Blog">
+      <textarea id="blogDesc" placeholder="Descrição do blog"></textarea>
+      <button id="createBlogBtn">Criar Blog</button>
     </div>
 
-    <!-- MENSAGENS -->
-    <div id="messagesTab" class="tab">
-      <input type="text" id="msgTo" placeholder="Para @GATTAG">
-      <textarea id="msgText" placeholder="Escreve a tua mensagem..."></textarea>
-      <button id="sendMsgBtn">Enviar Mensagem</button>
-      <h4>Caixa de Entrada</h4>
-      <div id="messages"></div>
+    <!-- MEUS BLOGS -->
+    <div id="myBlogsTab" class="tab">
+      <div id="myBlogs"></div>
     </div>
 
-    <!-- GOD MODE (APENAS PARA GODS) -->
+    <!-- GOD MODE -->
     <div id="godTab" class="tab">
-      <input type="text" id="searchGod" placeholder="Procurar @GATTAG 🔍">
+      <input type="text" id="searchGod" placeholder="Procurar @GATTAG ou blog 🔍">
       <button id="searchGodBtn">Procurar</button>
       <div id="godUsers"></div>
     </div>
